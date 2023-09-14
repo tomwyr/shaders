@@ -2,19 +2,18 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-class SmoothClip extends StatefulWidget {
-  const SmoothClip({
-    super.key,
-    required this.child,
-  });
+// https://stegu.github.io/webgl-noise/webdemo/
+// https://rtouti.github.io/graphics/perlin-noise-algorithm
+// https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
 
-  final Widget child;
+class FloatingGradient extends StatefulWidget {
+  const FloatingGradient({super.key});
 
   @override
-  State<SmoothClip> createState() => _SmoothClipState();
+  State<FloatingGradient> createState() => _FloatingGradientState();
 }
 
-class _SmoothClipState extends State<SmoothClip> with SingleTickerProviderStateMixin {
+class _FloatingGradientState extends State<FloatingGradient> with SingleTickerProviderStateMixin {
   late AnimationController controller;
 
   FragmentShader? shader;
@@ -35,12 +34,13 @@ class _SmoothClipState extends State<SmoothClip> with SingleTickerProviderStateM
   void _setupAnimation() {
     controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 500),
+      upperBound: 250,
     )..repeat();
   }
 
   void _loadShaderAsset() async {
-    final program = await FragmentProgram.fromAsset('shaders/smooth_clip.frag');
+    final program = await FragmentProgram.fromAsset('shaders/floating_gradient.frag');
     final shader = program.fragmentShader();
 
     setState(() {
@@ -65,9 +65,14 @@ class _SmoothClipState extends State<SmoothClip> with SingleTickerProviderStateM
       child: AnimatedBuilder(
         animation: controller,
         builder: (context, child) => ShaderMask(
-          blendMode: BlendMode.dstOut,
+          blendMode: BlendMode.src,
           shaderCallback: (rect) => _createShader(rect),
-          child: widget.child,
+          child: const SizedBox.square(
+            dimension: 300,
+            child: ColoredBox(
+              color: Colors.transparent,
+            ),
+          ),
         ),
       ),
     );
