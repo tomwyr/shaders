@@ -15,14 +15,6 @@ vec3 noiseToGradient(float noise) {
   return rgb;
 }
 
-void main() {
-    vec2 uv = (FlutterFragCoord().xy / uSize.y);
-    float noise = uvToNoise(uv);
-    vec3 rgb = noiseToGradient(noise);
-
-    fragColor = vec4(rgb, 1);
-}
-
 //
 // Description : Array and textureless GLSL 2D/3D/4D simplex 
 //               noise functions.
@@ -143,4 +135,12 @@ float uvToNoise(vec2 uv) {
     n += 0.03125 * color(xy * 32.0 - 5.0 * step);
 
     return n;
+}
+
+void main() {
+    vec2 uv = (FlutterFragCoord().xy / uSize.y);
+    float noise = uvToNoise(uv);
+    vec3 rgb = noiseToGradient(noise);
+
+    fragColor = vec4(rgb, 1);
 }
